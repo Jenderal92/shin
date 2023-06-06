@@ -1,4 +1,4 @@
-GIF89a;
+
 <?php
 echo '<img class=" height="200" src="https://i.ibb.co/64PG4Zp/images.png"/><title>Fake Taxi</title>';
 echo '<b><font face="Courier new" color="black" size="6">| _ByME - Jenderal92 - Ajibarang1337 |</b></font>';
